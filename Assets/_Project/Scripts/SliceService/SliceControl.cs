@@ -1,0 +1,215 @@
+using UnityEngine;
+using TMPro;
+using JetBrains.Annotations;
+using System;
+using System.Xml.Schema;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine.UI;
+using DG.Tweening;
+
+namespace Hanzzz.MeshSlicerFree
+{
+
+    public class SliceControl : MonoBehaviour
+    {
+        [SerializeField] private GameObject originalGameObject;
+        [SerializeField] private Transform slicePlane;
+        [SerializeField] private Material intersectionMaterial;
+        [SerializeField] private Camera mainCamera;
+        [SerializeField] private KeyCode cutKey;
+        [SerializeField] private GameObject[] slashPrefabs;
+        [SerializeField] private Touchpad touchpad;
+        [SerializeField] private float raycastDistance;
+        [SerializeField] private LayerMask layerMask;
+        [SerializeField] private float moveDistance;
+        [SerializeField] private BlowsEffect blowsEffectPrefab;
+        [SerializeField] private GameObject premiumBlowPrefab;
+ 
+        public SliceTarget.SliceName currentSliceName;
+        public float blockSlice;
+      
+        private static Slicer slicer;
+
+        public Action<SliceTarget> onSlice;
+        public Action onBomb;
+       public int countSlash;
+        private void Awake()
+        {
+            if (null == slicer)
+            {
+                slicer = new Slicer();
+            }
+        }
+        Tween slashTween;
+        private void Update()
+        {
+            RotatePlane();
+            MoveSlicer();
+            if (blockSlice > 0)
+            {
+                blockSlice -= Time.deltaTime;
+            }
+
+            RaycastHit hit = new RaycastHit();
+            if (Input.GetMouseButton(0))
+            {
+                Vector3 worldPos = GetMouseWorldPosition(mainCamera,slicePlane);
+                Ray ray = new Ray(mainCamera.transform.position, worldPos - mainCamera.transform.position);
+
+                if (Physics.Raycast(ray, out hit, raycastDistance, layerMask))
+                {
+                    if (hit.collider.CompareTag("Plane") == false)
+                        originalGameObject = hit.collider.gameObject;
+
+
+                }
+            }
+
+            if (Input.GetMouseButton(0) && originalGameObject != null && hit.collider != null)
+            {
+
+                var target = originalGameObject.GetComponent<SliceTarget>();
+                if (target == null)
+                {
+                    originalGameObject = null; return;
+                }
+                if (target.SliceType == SliceTarget.SliceName.bomb)
+                {
+                    onBomb?.Invoke();
+                    Destroy(originalGameObject); return;
+                }
+                if(target.SliceType == SliceTarget.SliceName.premium && countSlash < 25)
+                {
+                    CreateSlashEffect();
+                    countSlash++;
+                   slashTween?.Kill();
+                   slashTween = target.transform.DOShakeScale(0.5f, 0.7f, 15);
+                    return;
+                }
+                else if(target.SliceType == SliceTarget.SliceName.premium)
+                {
+                    onSlice?.Invoke(target);
+                    Destroy(originalGameObject); return;
+                }
+                IncrementBlock(target);
+
+                intersectionMaterial = target.Material;
+                currentSliceName = target.SliceType;
+                blockSlice = Mathf.Clamp(blockSlice, 0, 2.5f);
+                Plane plane = new Plane(slicePlane.up, slicePlane.position);
+                Slicer.SliceReturnValue sliceReturnValue;
+                try
+                {
+                    int triangleCount = originalGameObject.GetComponent<MeshFilter>().sharedMesh.triangles.Length;
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    sliceReturnValue = slicer.Slice(originalGameObject, plane, intersectionMaterial);
+                }
+                catch
+                {
+                    sliceReturnValue = null;
+                }
+
+                if (null == sliceReturnValue)
+                {
+                    return;
+                }
+                sliceReturnValue.topGameObject.transform.SetParent(originalGameObject.transform.parent, false);
+                sliceReturnValue.bottomGameObject.transform.SetParent(originalGameObject.transform.parent, false);
+
+                sliceReturnValue.topGameObject.transform.position += slicePlane.up.normalized * moveDistance;
+                sliceReturnValue.bottomGameObject.transform.position += -slicePlane.up.normalized * moveDistance;
+
+
+                sliceReturnValue.bottomGameObject.AddComponent<MeshCollider>().convex = true;
+                sliceReturnValue.topGameObject.AddComponent<MeshCollider>().convex = true;
+                sliceReturnValue.bottomGameObject.AddComponent<Rigidbody>();
+                sliceReturnValue.topGameObject.AddComponent<Rigidbody>();
+
+                CreateSlashEffect();
+
+                if (blockSlice < 1)
+                {
+                    if (target.SliceType != SliceTarget.SliceName.premium)
+                    {
+                        var bottonTarget = sliceReturnValue.bottomGameObject.AddComponent<SliceTarget>();
+                        var topTarget = sliceReturnValue.topGameObject.AddComponent<SliceTarget>();
+                        bottonTarget.SliceType = target.SliceType;
+                        topTarget.SliceType = target.SliceType;
+                        bottonTarget.Material = target.Material;
+                        topTarget.Material = target.Material;
+                    }
+                    if (target.SliceType == SliceTarget.SliceName.premium)
+                    {
+                        Destroy(sliceReturnValue.bottomGameObject.GetComponentInChildren<ParticleSystem>()?.gameObject);
+                        Destroy(sliceReturnValue.topGameObject.GetComponentInChildren<ParticleSystem>()?.gameObject);
+                    }
+                }
+                var planePosition = GetMouseWorldPosition(mainCamera, slicePlane.transform);
+                if (target.SliceType != SliceTarget.SliceName.premium)
+                {
+                    var blows = Instantiate(blowsEffectPrefab, new Vector3(planePosition.x, planePosition.y, 5), Quaternion.identity);
+                    blows.SetColor(target.Material.color);
+
+                    Destroy(blows.gameObject, 3.5f);
+                }
+                else
+                {
+                    var blows = Instantiate(premiumBlowPrefab, new Vector3(planePosition.x, planePosition.y, 5), Quaternion.identity);
+                    Destroy(blows.gameObject, 3.5f);
+                }
+                onSlice?.Invoke(target);
+                Destroy(originalGameObject);
+                Destroy(sliceReturnValue.bottomGameObject, 3);
+                Destroy(sliceReturnValue.topGameObject, 3);
+                originalGameObject = null;
+            }
+        }
+
+        private void CreateSlashEffect()
+        {
+            var rndSlashEffect = UnityEngine.Random.Range(0, slashPrefabs.Length);
+            var slashEffect = Instantiate(slashPrefabs[rndSlashEffect], slicePlane.transform.position, slicePlane.transform.rotation);
+            Destroy(slashEffect.gameObject, 2f);
+        }
+
+        private void IncrementBlock(SliceTarget target)
+        {
+            if (currentSliceName == target.SliceType)
+            {
+                blockSlice += 1;
+                currentSliceName = target.SliceType;
+            }
+            else
+            {
+                blockSlice -= 1;
+            }
+        }
+
+        private void RotatePlane()
+        {
+            if (Input.GetMouseButton(0))
+            { 
+                slicePlane .transform.right =  new Vector3(touchpad.Horizontal, touchpad.Vertical, 0) ;
+            }
+        }
+
+        private void MoveSlicer()
+        {
+            Vector3 worldPosition = GetMouseWorldPosition(mainCamera,slicePlane); 
+            slicePlane.position = new Vector3(worldPosition.x, worldPosition.y, slicePlane.position.z);
+        }
+
+        public static Vector3 GetMouseWorldPosition(Camera mainCamera, Transform target)
+        {
+            float plainPositionZ = mainCamera.WorldToScreenPoint(target.position).z;
+            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, plainPositionZ));
+            return worldPosition;
+        }
+        private void OnDestroy()
+        {
+            slashTween?.Kill();
+        }
+    }
+    
+
+}
