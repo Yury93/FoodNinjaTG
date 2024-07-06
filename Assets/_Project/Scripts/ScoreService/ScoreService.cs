@@ -17,11 +17,13 @@ public class ScoreService : MonoBehaviour
     public Score decrementTextPrefab;
     public Camera cameraMain;
     public int score;
+    private Vector3 textMoneyPosition;
     Tween tween;
     private void Awake()
     {
         sliceControl.onSlice += Increment;
         sliceControl.onBomb += Dencrement;
+     textMoneyPosition =   scoreText.transform.position;
     }
 
     public void Increment( SliceTarget sliceTarget)
@@ -50,8 +52,8 @@ public class ScoreService : MonoBehaviour
         }
         text.PlayAnimation(Vector3.up);
         tween?.Kill();
-        moneyImage.transform.localScale = Vector3.one;
-        moneyImage.transform.DOShakeScale(0.5f, 1, 10).OnComplete(( ) => moneyImage.transform.localScale = Vector3.one);
+       
+        tween = scoreText.transform.DOPunchScale(new Vector3(0.15f, 0.15f, 0.15f), 0.5f).OnComplete(() => scoreText.transform.localScale = Vector3.one);
     }
     public void Dencrement(SliceTarget sliceTarget)
     { 
@@ -64,8 +66,9 @@ public class ScoreService : MonoBehaviour
       text.PlayAnimation(Vector3.down);
         scoreText.text = score.ToString();
         tween?.Kill();
-        moneyImage.transform.localScale = Vector3.one;
-        moneyImage.transform.DOShakeScale(0.5f, 1, 10).OnComplete(() => moneyImage.transform.localScale = Vector3.one);
+        //   moneyImage.transform.localScale = Vector3.one;
+        // scoreText.transform.DOPunchScale(0.5f, 1, 10).OnComplete(() => moneyImage.transform.localScale = Vector3.one);
+        tween = scoreText.transform.DOPunchScale(new Vector3(0.15f,0.15f,0.15f),0.5f).OnComplete(() => scoreText.transform.localScale = Vector3.one);
     }
     private void OnDestroy()
     {

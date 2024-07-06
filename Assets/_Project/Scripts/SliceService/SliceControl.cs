@@ -31,6 +31,7 @@ namespace Hanzzz.MeshSlicerFree
         private static Slicer slicer;
 
         public Action<SliceTarget> onSlice;
+        public Action onSlashPremiumTarget;
         public Action<SliceTarget> onBomb;
        public int countSlash;
         private void Awake()
@@ -84,6 +85,7 @@ namespace Hanzzz.MeshSlicerFree
                     countSlash++;
                    slashTween?.Kill();
                    slashTween = target.transform.DOShakeScale(0.5f, 0.7f, 15);
+                    onSlashPremiumTarget?.Invoke();
                     return;
                 }
                 else if(target.SliceType == SliceTarget.SliceName.premium)
