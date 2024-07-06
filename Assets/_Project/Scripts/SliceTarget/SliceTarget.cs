@@ -30,4 +30,5 @@ public class SliceTarget : MonoBehaviour
     [field: SerializeField] public RbMover Mover { get; set; }
     [field: SerializeField] public Material Material { get; set; }
     [field: SerializeField] public ParticleSystem particleSystem { get; set; }
+    public int scoreTarget = 1;
 }

@@ -23,11 +23,11 @@ public class SpecialSliceTargetHandler : MonoBehaviour
         if(target.SliceType == SliceTarget.SliceName.premium)
         { 
             onSlicePremiumTarget?.Invoke();
-            ShowWhiteScreen();
+            ShowWhiteScreen(target);
         }
     }
 
-    private void ShowWhiteScreen()
+    private void ShowWhiteScreen(SliceTarget sliceTarget)
     {
         StartCoroutine(CorSliceBomb());
        IEnumerator CorSliceBomb()

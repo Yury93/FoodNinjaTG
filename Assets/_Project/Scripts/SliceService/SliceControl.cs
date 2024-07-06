@@ -31,7 +31,7 @@ namespace Hanzzz.MeshSlicerFree
         private static Slicer slicer;
 
         public Action<SliceTarget> onSlice;
-        public Action onBomb;
+        public Action<SliceTarget> onBomb;
        public int countSlash;
         private void Awake()
         {
@@ -75,7 +75,7 @@ namespace Hanzzz.MeshSlicerFree
                 }
                 if (target.SliceType == SliceTarget.SliceName.bomb)
                 {
-                    onBomb?.Invoke();
+                    onBomb?.Invoke(target);
                     Destroy(originalGameObject); return;
                 }
                 if(target.SliceType == SliceTarget.SliceName.premium && countSlash < 25)
