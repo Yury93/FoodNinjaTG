@@ -12,6 +12,7 @@ public class TargetSpawner : MonoBehaviour
     public float maxSpeed = 18f;
     public float minSpeed = 10f;
     public float spawnTimer = 10f;
+    public bool spawnForever = false;
     public List<TransformSpawn> spawnDirection;
     public List<SliceTarget> sliceTargetPrefabs;
     public bool AccessSpawn;
@@ -28,7 +29,7 @@ public class TargetSpawner : MonoBehaviour
         StartCoroutine(StartSpawn());
         IEnumerator StartSpawn()
         {
-            while (spawnTimer > 0)
+            while (spawnTimer > 0 || spawnForever)
             {
                 if (AccessSpawn)
                 {
