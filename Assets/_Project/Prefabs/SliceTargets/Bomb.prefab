@@ -126,6 +126,8 @@ MonoBehaviour:
   <Mover>k__BackingField: {fileID: 6076618873859752360}
   <Material>k__BackingField: {fileID: 2100000, guid: 00c30f0f7898373478d4123d3b363651,
     type: 2}
+  <particleSystem>k__BackingField: {fileID: 0}
+  scoreTarget: 1
 --- !u!114 &6076618873859752360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76123cb2928173944b205ee11d1efa28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sliceTarget: {fileID: 9003623102297635970}
   maxY: -5.44
   minY: -10
   rb: {fileID: 5012964927800005206}
@@ -395,7 +398,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -1481,7 +1484,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 0.80558854, b: 0.305, a: 1}
+        key1: {r: 1, g: 0.80558854, b: 0.305, a: 0}
         key2: {r: 0.7372549, g: 0.38244438, b: 0.20784314, a: 1}
         key3: {r: 0.1882353, g: 0.10617304, b: 0, a: 1}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1497,7 +1500,7 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 65535
+        atime1: 64533
         atime2: 65535
         atime3: 65535
         atime4: 0
@@ -1505,9 +1508,9 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 4
-        m_NumAlphaKeys: 2
+        m_NumAlphaKeys: 3
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4961,7 +4964,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b5d24f24a809168479fdfa62ee80f803, type: 2}
+  - {fileID: 2100000, guid: c991635cb43a95a4abf148ce784d30fd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
