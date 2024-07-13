@@ -37,7 +37,7 @@ namespace Hanzzz.MeshSlicerFree
             Slice();
         }
 
-        private async void Slice()
+        private   void Slice()
         {
             if(isSlicing)
             {
@@ -49,7 +49,7 @@ namespace Hanzzz.MeshSlicerFree
             int triangleCount = originalGameObject.GetComponent<MeshFilter>().sharedMesh.triangles.Length;
             int startFrame =  Time.frameCount;
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            Slicer.SliceReturnValue sliceReturnValue = await slicer.SliceAsync(originalGameObject, plane, intersectionMaterial);
+            Slicer.SliceReturnValue sliceReturnValue =  slicer.SliceAsync(originalGameObject, plane, intersectionMaterial);
             loggingText.text = $"Triangle count: {triangleCount}; slice frame: {Time.frameCount-startFrame}; slice time: {watch.ElapsedMilliseconds} ms.";
 
             sliceReturnValue.topGameObject.transform.SetParent(originalGameObject.transform.parent, false);

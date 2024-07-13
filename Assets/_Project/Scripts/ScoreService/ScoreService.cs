@@ -25,7 +25,14 @@ public class ScoreService : MonoBehaviour
         sliceControl.onBomb += Dencrement;
      textMoneyPosition =   scoreText.transform.position;
     }
-
+    public void AddScore(int score)
+    {
+        this.score += score;
+        scoreText.text = this.score.ToString();
+        var text = Instantiate(incrementTextPrefab, Vector3.zero, Quaternion.identity, this.transform);
+        text.PlayAnimation(Vector3.up);
+        Destroy(text?.gameObject, 3f);
+    }
     public void Increment( SliceTarget sliceTarget)
     {
         if ( sliceTarget.SliceType == SliceTarget.SliceName.premium)
@@ -54,6 +61,7 @@ public class ScoreService : MonoBehaviour
         tween?.Kill();
        
         tween = scoreText.transform.DOPunchScale(new Vector3(0.15f, 0.15f, 0.15f), 0.5f).OnComplete(() => scoreText.transform.localScale = Vector3.one);
+        Destroy(text?.gameObject, 3f);
     }
     public void Dencrement(SliceTarget sliceTarget)
     { 
@@ -69,6 +77,8 @@ public class ScoreService : MonoBehaviour
         //   moneyImage.transform.localScale = Vector3.one;
         // scoreText.transform.DOPunchScale(0.5f, 1, 10).OnComplete(() => moneyImage.transform.localScale = Vector3.one);
         tween = scoreText.transform.DOPunchScale(new Vector3(0.15f,0.15f,0.15f),0.5f).OnComplete(() => scoreText.transform.localScale = Vector3.one);
+
+        Destroy(text?.gameObject, 3f);
     }
     private void OnDestroy()
     {

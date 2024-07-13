@@ -13,12 +13,17 @@ public class TimeHandler : MonoBehaviour
     {
         if (!HAS_KEY_TIME_SAVED) { return true; }
 
-        TimeSpan timeLeft = TimeNow - LastTime;
-        if (timeLeft.TotalHours >= leftHourAdv) { return true; }
+        TimeSpan timeLeft =   LastTime - TimeNow;
+        Debug.Log($" {timeLeft.TotalMinutes}>={timeLeft.Add(new TimeSpan(0, leftHourAdv, 0)).TotalMinutes}");
+        if (timeLeft.TotalMinutes >= timeLeft.Add(new TimeSpan(0,leftHourAdv,0)).TotalMinutes) { return true; }
         else { return false; }
     }
    public static void OnSaveTimeAdv()
     {
-        Jammer.PlayerPrefs.SetString(LAST_TIME, TimeNow.ToString());
+        Jammer.PlayerPrefs.SetString(LAST_TIME, TimeNow.ToLocalTime().ToString());
+    }
+    public static void DeleteSavedTimes()
+    {
+        Jammer.PlayerPrefs.DeleteKey(LAST_TIME);
     }
 }

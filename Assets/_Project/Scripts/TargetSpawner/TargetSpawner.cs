@@ -1,4 +1,5 @@
 using Hanzzz.MeshSlicerFree;
+using Scripts.Integration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using UnityEngine;
 
 public class TargetSpawner : MonoBehaviour
 {
+ 
     public SliceControl sliceControl;
     public SpecialSliceTargetHandler targetHandler;
     public float maxSpeed = 18f;
@@ -31,7 +33,7 @@ public class TargetSpawner : MonoBehaviour
         {
             while (spawnTimer > 0 || spawnForever)
             {
-                if (AccessSpawn)
+                if (AccessSpawn && Telegram.AdvButtonIsActive == false)
                 {
                     var rndChapterDelay = UnityEngine.Random.Range(0.5f, 3f);
                     yield return new WaitForSecondsRealtime(rndChapterDelay);

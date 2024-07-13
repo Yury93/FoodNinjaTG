@@ -27,7 +27,7 @@ public class SpecialSliceTargetHandler : MonoBehaviour
         }
     }
 
-    private void ShowWhiteScreen(SliceTarget sliceTarget)
+    public void ShowWhiteScreen(SliceTarget sliceTarget)
     {
         StartCoroutine(CorSliceBomb());
        IEnumerator CorSliceBomb()

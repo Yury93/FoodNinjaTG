@@ -94,18 +94,20 @@ namespace Hanzzz.MeshSlicerFree
             public GameObject bottomGameObject;
         }
 
-        public async Task<SliceReturnValue> SliceAsync(GameObject originalGameObject, int skinnedMeshRendererIndex, int rootIndex, Plane slicePlane,Material intersectionMaterial)
+        public  SliceReturnValue  SliceAsync(GameObject originalGameObject, int skinnedMeshRendererIndex, int rootIndex, Plane slicePlane,Material intersectionMaterial)
         {
             CopyOriginalData(originalGameObject, skinnedMeshRendererIndex, rootIndex, slicePlane);
 
             for(currentSubMeshIndex=0; currentSubMeshIndex<subMeshCount; currentSubMeshIndex++)
             {
                 originalMesh.GetTriangles(originalTriangles,currentSubMeshIndex);
-                await Task.Run(() => LoopThroughTriangles());
+              //возможно нужна задержка   LoopThroughTriangles() ;
             }
 
-            await Task.Run(() => FillIntersection(topIntersectionConnection,true));
-            await Task.Run(() => FillIntersection(bottomIntersectionConnection,false));
+            //возможно нужна задержка
+            FillIntersection(topIntersectionConnection,true) ;
+            //возможно нужна задержка
+            FillIntersection(bottomIntersectionConnection,false);
 
             return CreateNewGameObjects(originalGameObject, skinnedMeshRendererIndex, rootIndex, intersectionMaterial);
         }
