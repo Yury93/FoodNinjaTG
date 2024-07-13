@@ -7,20 +7,24 @@ public class TimeHandler : MonoBehaviour
 {
     public const string LAST_TIME = "LASTTIMEPREFS"; 
     public static DateTime TimeNow => DateTime.Now.ToLocalTime();
-    public static DateTime LastTime => DateTime.Parse( Jammer.PlayerPrefs.GetString(LAST_TIME)).ToLocalTime();
+    public static DateTime LastTime => DateTime.Parse(Jammer.PlayerPrefs.GetString(LAST_TIME));
     public static bool HAS_KEY_TIME_SAVED => Jammer.PlayerPrefs.HasKey(LAST_TIME);
-    public static bool HasAdv(int leftHourAdv)
+    public static bool HasAdv()
     {
         if (!HAS_KEY_TIME_SAVED) { return true; }
-
+         
         TimeSpan timeLeft =   LastTime - TimeNow;
-        Debug.Log($" {timeLeft.TotalMinutes}>={timeLeft.Add(new TimeSpan(0, leftHourAdv, 0)).TotalMinutes}");
-        if (timeLeft.TotalMinutes >= timeLeft.Add(new TimeSpan(0,leftHourAdv,0)).TotalMinutes) { return true; }
+        Debug.Log($" {timeLeft.TotalMinutes}  ");
+        if (timeLeft.TotalMinutes <= 0) { return true; }
         else { return false; }
     }
    public static void OnSaveTimeAdv()
     {
-        Jammer.PlayerPrefs.SetString(LAST_TIME, TimeNow.ToLocalTime().ToString());
+        int addMinuts = 3;
+    
+      var timeSaved =  TimeNow.AddMinutes(addMinuts).ToLocalTime();
+        //   Debug.Log($"timed SAVED:  {timeSaved.ToString()} ");
+        Jammer.PlayerPrefs.SetString(LAST_TIME, timeSaved.ToString());
     }
     public static void DeleteSavedTimes()
     {

@@ -59,7 +59,7 @@ namespace Scripts.Integration
                 if (showAdvButton.gameObject.activeSelf == false )
                 {
                     Debug.Log("advertising request");
-                    if (TimeHandler.HasAdv(3))
+                    if (TimeHandler.HasAdv())
                     {
                         showAdvButton.gameObject.SetActive(true);
                         fadeImage.gameObject.SetActive(true);
