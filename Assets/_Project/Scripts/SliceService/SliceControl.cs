@@ -133,12 +133,12 @@ namespace Hanzzz.MeshSlicerFree
                 {
                     if (target.SliceType != SliceTarget.SliceName.premium)
                     {
-                        var bottonTarget = sliceReturnValue.bottomGameObject.AddComponent<SliceTarget>();
-                        var topTarget = sliceReturnValue.topGameObject.AddComponent<SliceTarget>();
-                        bottonTarget.SliceType = target.SliceType;
-                        topTarget.SliceType = target.SliceType;
-                        bottonTarget.Material = target.Material;
-                        topTarget.Material = target.Material;
+                        //var bottonTarget = sliceReturnValue.bottomGameObject.AddComponent<SliceTarget>();
+                        //var topTarget = sliceReturnValue.topGameObject.AddComponent<SliceTarget>();
+                        //bottonTarget.SliceType = target.SliceType;
+                        //topTarget.SliceType = target.SliceType;
+                        //bottonTarget.Material = target.Material;
+                        //topTarget.Material = target.Material;
                     }
                     if (target.SliceType == SliceTarget.SliceName.premium)
                     {
@@ -162,7 +162,7 @@ namespace Hanzzz.MeshSlicerFree
                 onSlice?.Invoke(target);
                 Destroy(originalGameObject);
                 Destroy(sliceReturnValue.bottomGameObject, 3);
-                Destroy(sliceReturnValue.topGameObject, 3);
+                Destroy(sliceReturnValue.topGameObject, 2.5f);
                 originalGameObject = null;
             }
         }

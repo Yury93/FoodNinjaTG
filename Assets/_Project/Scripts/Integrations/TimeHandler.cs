@@ -5,29 +5,20 @@ using UnityEngine;
 
 public class TimeHandler : MonoBehaviour
 {
-    public const string HOUR_KEY = "HOUR_KEY";
-    public const string DAYS_KEY = "DAYS_KEY";
-    public static DateTime TimeNow => DateTime.Now;
-    public static int LastHour { get { return int.Parse( Jammer.PlayerPrefs.GetString(HOUR_KEY)); } }
-    public static int LastDays { get { return int.Parse(Jammer.PlayerPrefs.GetString(DAYS_KEY)); } }
+    public const string LAST_TIME = "LASTTIMEPREFS"; 
+    public static DateTime TimeNow => DateTime.Now.ToLocalTime();
+    public static DateTime LastTime => DateTime.Parse( Jammer.PlayerPrefs.GetString(LAST_TIME)).ToLocalTime();
+    public static bool HAS_KEY_TIME_SAVED => Jammer.PlayerPrefs.HasKey(LAST_TIME);
     public static bool HasAdv(int leftHourAdv)
     {
-        DateTime lastTime = new DateTime();
-        lastTime.AddHours(LastHour);
-        lastTime.AddHours(LastDays);
-        lastTime.AddYears(-lastTime.Year);
-        lastTime.AddYears(TimeNow.Year);
-        lastTime.AddYears(-lastTime.Month);
-        lastTime.AddYears(TimeNow.Month);
-        Debug.Log("LaSTtIME: " + lastTime.ToString()+"/ time now:" + TimeNow);
-        var timeLeft = TimeNow.AddHours(-leftHourAdv) - lastTime;
-        if (timeLeft.TotalSeconds <= 0)
-        {
-            PlayerPrefs.DeleteKey(HOUR_KEY);
-            PlayerPrefs.SetInt(DAYS_KEY);
-            return true;
-        }
-        else return false;
+        if (!HAS_KEY_TIME_SAVED) { return true; }
+
+        TimeSpan timeLeft = TimeNow - LastTime;
+        if (timeLeft.TotalHours >= leftHourAdv) { return true; }
+        else { return false; }
     }
-   
+   public static void OnSaveTimeAdv()
+    {
+        Jammer.PlayerPrefs.SetString(LAST_TIME, TimeNow.ToString());
+    }
 }

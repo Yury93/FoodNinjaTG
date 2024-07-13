@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
+using TMPro;
 
 namespace Scripts.Integration
 {
     public class Telegram : MonoBehaviour
-    {
+    { 
         public bool enable,test;
         [DllImport("__Internal")]
         private static extern void Hello();
@@ -27,22 +28,9 @@ namespace Scripts.Integration
                     Debug.Log("editor_hello");
                 }
             }
-         if(   Jammer.PlayerPrefs.HasKey("click" ))
-            {
-                Debug.Log($"SAVED CKLICK = {Jammer.PlayerPrefs.GetString("click")}");
-            }
+         
         }
-        private void Update()
-        {
-            if(Input.GetMouseButtonDown(0) && enable && test) {
-                if (click == 5)
-                {
-                    Jammer.PlayerPrefs.SetString("click", click.ToString());
-                    click = 0;
-                }
-                else click++;
-            }
-        }
+      
         public void CallAdv()
         {
             if (enable)

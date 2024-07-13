@@ -112,6 +112,7 @@ public class TargetSpawner : MonoBehaviour
             target.Mover.vector3 = dir;
          
                 target.Mover.speed = speed;
+            Destroy(target?.gameObject,5);
         }
         return target;
     }
