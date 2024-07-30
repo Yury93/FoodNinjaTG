@@ -131,15 +131,15 @@ namespace Hanzzz.MeshSlicerFree
 
                 if (blockSlice < 1)
                 {
-                    if (target.SliceType != SliceTarget.SliceName.premium)
-                    {
+                    //if (target.SliceType != SliceTarget.SliceName.premium)
+                    //{
                         //var bottonTarget = sliceReturnValue.bottomGameObject.AddComponent<SliceTarget>();
                         //var topTarget = sliceReturnValue.topGameObject.AddComponent<SliceTarget>();
                         //bottonTarget.SliceType = target.SliceType;
                         //topTarget.SliceType = target.SliceType;
                         //bottonTarget.Material = target.Material;
                         //topTarget.Material = target.Material;
-                    }
+                    //}
                     if (target.SliceType == SliceTarget.SliceName.premium)
                     {
                         Destroy(sliceReturnValue.bottomGameObject.GetComponentInChildren<ParticleSystem>()?.gameObject);

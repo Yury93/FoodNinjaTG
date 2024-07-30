@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 public class ScoreService : MonoBehaviour
 {
+    public GameClose iframe;
     public SliceControl sliceControl;
     public float hieghtFlyText;
     public Image moneyImage;
@@ -27,6 +28,7 @@ public class ScoreService : MonoBehaviour
     }
     public void AddScore(int score)
     {
+        
         this.score += score;
         scoreText.text = this.score.ToString();
         var text = Instantiate(incrementTextPrefab, Vector3.zero, Quaternion.identity, this.transform);
@@ -35,14 +37,18 @@ public class ScoreService : MonoBehaviour
     }
     public void Increment( SliceTarget sliceTarget)
     {
+        
         if ( sliceTarget.SliceType == SliceTarget.SliceName.premium)
         {
             this.score += 20;
+            iframe.CallAddScore(20);
         }
         else
         {
-            this.score += sliceTarget.scoreTarget; 
+            this.score += sliceTarget.scoreTarget;
+            iframe.CallAddScore(sliceTarget.scoreTarget);
         }
+ 
         scoreText.text = this.score.ToString();
 
         var targetPos = sliceTarget.transform.position;
@@ -64,8 +70,9 @@ public class ScoreService : MonoBehaviour
         Destroy(text?.gameObject, 3f);
     }
     public void Dencrement(SliceTarget sliceTarget)
-    { 
-        score-= 10;
+    {
+        iframe.CallAddScore(-10);
+        score -= 10;
         score = Mathf.Clamp(score, 0, 2000000);
       var targetPos =  sliceTarget.transform.position;
         var screenPoint = cameraMain.WorldToScreenPoint(targetPos);
