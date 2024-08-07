@@ -263,12 +263,12 @@ GameObject:
   - component: {fileID: 147945922}
   - component: {fileID: 147945921}
   m_Layer: 5
-  m_Name: Button
+  m_Name: CloseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &147945920
 RectTransform:
   m_ObjectHideFlags: 0
@@ -276,18 +276,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 147945919}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 847742732}
-  m_Father: {fileID: 725471330}
+  m_Father: {fileID: 1824653863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 171.0127, y: -93.533936}
-  m_SizeDelta: {x: 216.0254, y: 80.9323}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -450, y: -233}
+  m_SizeDelta: {x: 216.02539, y: 80.9323}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &147945921
 MonoBehaviour:
@@ -572,7 +572,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 125.65
+  m_fontSize: 130.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -753,7 +753,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.4745098, g: 0.3597373, b: 0.19215688, a: 1}
+  m_BackGroundColor: {r: 0.034538973, g: 0.10090623, b: 0.2905661, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1209,11 +1209,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ReferenceResolution: {x: 800, y: 1600}
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -1254,8 +1254,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 147945920}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1732,8 +1731,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1814,8 +1812,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -258.027, y: -152.989}
-  m_SizeDelta: {x: 456.338, y: 205.019}
+  m_AnchoredPosition: {x: -230.014, y: -155.536}
+  m_SizeDelta: {x: 400.313, y: 210.112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1432856761
 MonoBehaviour:
@@ -2544,6 +2542,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1432856760}
+  - {fileID: 147945920}
   - {fileID: 1709860361}
   - {fileID: 176553268}
   m_Father: {fileID: 0}
@@ -3089,8 +3088,8 @@ MonoBehaviour:
   targetHandler: {fileID: 1460948069}
   maxSpeed: 24.6
   minSpeed: 16.7
-  spawnTimer: 402.4867
-  spawnForever: 1
+  spawnTimerMin: 0.68
+  spawnTimerMax: 1.13
   spawnDirection:
   - spawnTransform: {fileID: 593260247}
     isRandom: 1

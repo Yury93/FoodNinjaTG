@@ -10,4 +10,8 @@ public class BlowsEffect : MonoBehaviour
         particleSystem1.startColor = color; 
         particleSystem3.startColor = color;
     }
+    private void Start()
+    {
+        Destroy(gameObject,3f);
+    }
 }

@@ -12,7 +12,7 @@ namespace Hanzzz.MeshSlicerFree
 
     public class SliceControl : MonoBehaviour
     {
-        [SerializeField] private GameObject originalGameObject;
+        [SerializeField] private SliceTarget originalGameObject;
         [SerializeField] private Transform slicePlane;
         [SerializeField] private Material intersectionMaterial;
         [SerializeField] private Camera mainCamera;
@@ -52,16 +52,16 @@ namespace Hanzzz.MeshSlicerFree
             }
 
             RaycastHit hit = new RaycastHit();
+            Vector3 worldPos = GetMouseWorldPosition(mainCamera, slicePlane);
             if (Input.GetMouseButton(0))
             {
-                Vector3 worldPos = GetMouseWorldPosition(mainCamera,slicePlane);
+               
                 Ray ray = new Ray(mainCamera.transform.position, worldPos - mainCamera.transform.position);
 
                 if (Physics.Raycast(ray, out hit, raycastDistance, layerMask))
                 {
                     if (hit.collider.CompareTag("Plane") == false)
-                        originalGameObject = hit.collider.gameObject;
-
+                        originalGameObject = hit.collider?.gameObject?.GetComponent<SliceTarget>();
 
                 }
             }
@@ -69,7 +69,7 @@ namespace Hanzzz.MeshSlicerFree
             if (Input.GetMouseButton(0) && originalGameObject != null && hit.collider != null)
             {
 
-                var target = originalGameObject.GetComponent<SliceTarget>();
+                var target = originalGameObject;
                 if (target == null)
                 {
                     originalGameObject = null; return;
@@ -77,7 +77,7 @@ namespace Hanzzz.MeshSlicerFree
                 if (target.SliceType == SliceTarget.SliceName.bomb)
                 {
                     onBomb?.Invoke(target);
-                    Destroy(originalGameObject); return;
+                    Destroy(originalGameObject.gameObject); return;
                 }
                 if(target.SliceType == SliceTarget.SliceName.premium && countSlash < 25)
                 {
@@ -91,7 +91,7 @@ namespace Hanzzz.MeshSlicerFree
                 else if(target.SliceType == SliceTarget.SliceName.premium)
                 {
                     onSlice?.Invoke(target);
-                    Destroy(originalGameObject); return;
+                    Destroy(originalGameObject.gameObject); return;
                 }
                 IncrementBlock(target);
 
@@ -102,9 +102,9 @@ namespace Hanzzz.MeshSlicerFree
                 Slicer.SliceReturnValue sliceReturnValue;
                 try
                 {
-                    int triangleCount = originalGameObject.GetComponent<MeshFilter>().sharedMesh.triangles.Length;
+                    int triangleCount = originalGameObject.meshFilter.sharedMesh.triangles.Length;
                     var watch = System.Diagnostics.Stopwatch.StartNew();
-                    sliceReturnValue = slicer.Slice(originalGameObject, plane, intersectionMaterial);
+                    sliceReturnValue = slicer.Slice(originalGameObject.gameObject, plane, intersectionMaterial);
                 }
                 catch
                 {
@@ -130,39 +130,30 @@ namespace Hanzzz.MeshSlicerFree
                 CreateSlashEffect();
 
                 if (blockSlice < 1)
-                {
-                    //if (target.SliceType != SliceTarget.SliceName.premium)
-                    //{
-                        //var bottonTarget = sliceReturnValue.bottomGameObject.AddComponent<SliceTarget>();
-                        //var topTarget = sliceReturnValue.topGameObject.AddComponent<SliceTarget>();
-                        //bottonTarget.SliceType = target.SliceType;
-                        //topTarget.SliceType = target.SliceType;
-                        //bottonTarget.Material = target.Material;
-                        //topTarget.Material = target.Material;
-                    //}
+                { 
                     if (target.SliceType == SliceTarget.SliceName.premium)
                     {
                         Destroy(sliceReturnValue.bottomGameObject.GetComponentInChildren<ParticleSystem>()?.gameObject);
                         Destroy(sliceReturnValue.topGameObject.GetComponentInChildren<ParticleSystem>()?.gameObject);
                     }
                 }
-                var planePosition = GetMouseWorldPosition(mainCamera, slicePlane.transform);
+               
                 if (target.SliceType != SliceTarget.SliceName.premium)
                 {
-                    var blows = Instantiate(blowsEffectPrefab, new Vector3(planePosition.x, planePosition.y, 5), Quaternion.identity);
+                    var blows = Instantiate(blowsEffectPrefab, new Vector3(worldPos.x, worldPos.y, 5), Quaternion.identity);
                     blows.SetColor(target.Material.color);
 
-                    Destroy(blows.gameObject, 3.5f);
+
                 }
                 else
                 {
-                    var blows = Instantiate(premiumBlowPrefab, new Vector3(planePosition.x, planePosition.y, 5), Quaternion.identity);
-                    Destroy(blows.gameObject, 3.5f);
+                    var blows = Instantiate(premiumBlowPrefab, new Vector3(worldPos.x, worldPos.y, 5), Quaternion.identity);
+                    Destroy(blows?.gameObject, 3f);
                 }
                 onSlice?.Invoke(target);
-                Destroy(originalGameObject);
+                Destroy(originalGameObject.gameObject);
                 Destroy(sliceReturnValue.bottomGameObject, 3);
-                Destroy(sliceReturnValue.topGameObject, 2.5f);
+                Destroy(sliceReturnValue.topGameObject, 3.2f);
                 originalGameObject = null;
             }
         }

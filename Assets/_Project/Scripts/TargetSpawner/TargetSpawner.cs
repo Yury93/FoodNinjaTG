@@ -13,74 +13,39 @@ public class TargetSpawner : MonoBehaviour
     public SpecialSliceTargetHandler targetHandler;
     public float maxSpeed = 18f;
     public float minSpeed = 10f;
-    public float spawnTimer = 10f;
-    public bool spawnForever = false;
+  public float spawnTimerMin,spawnTimerMax;
+  private float spawnTimer;
     public List<TransformSpawn> spawnDirection;
     public List<SliceTarget> sliceTargetPrefabs;
     public bool AccessSpawn;
+    private float rndChapterDelay;
+    float rndTargetCreateDelay;
     private void Start()
     {
         AccessSpawn = true;
         targetHandler.onSlicePremiumTarget += () => AccessSpawn = true;
-        SpawnTargets();
+       
     }
-
-    public void SpawnTargets()
+    private void Update()
     {
-        StartCoroutine(StartTimer());
-        StartCoroutine(StartSpawn());
-        IEnumerator StartSpawn()
+        if (spawnTimer > 0) spawnTimer -= Time.deltaTime;
+        else if(AccessSpawn)  spawnTimer = UnityEngine.Random.Range( spawnTimerMin, spawnTimerMax);
+        
+        if (spawnTimer <= 0)
         {
-            while (spawnTimer > 0 || spawnForever)
+            if (AccessSpawn)
             {
-                if (AccessSpawn && Telegram.AdvButtonIsActive == false)
+                int rndPosition = UnityEngine.Random.Range(0, spawnDirection.Count);
+                var target = CreateTarget(spawnDirection[rndPosition]);
+                if (target.SliceType == SliceTarget.SliceName.premium)
                 {
-                    var rndChapterDelay = UnityEngine.Random.Range(0.5f, 3f);
-                    yield return new WaitForSecondsRealtime(rndChapterDelay);
-                    if (AccessSpawn)
-                    {
-                        var rndCount = UnityEngine.Random.Range(1, 10f);
-                        int countTarget = 0;
-                        var rndTargetCreateDelay = UnityEngine.Random.Range(0.3f, 1f);
-                        while (rndCount > countTarget)
-                        {
-                            var rndPosition = UnityEngine.Random.Range(0, spawnDirection.Count);
-                            if (AccessSpawn)
-                            {
-                                var target = CreateTarget(spawnDirection[rndPosition]);
-                                if(target.SliceType == SliceTarget.SliceName.premium)
-                                {
-                                    AccessSpawn = false;
-                                }
-                            }
-                            countTarget++;
-                            yield return new WaitForSecondsRealtime(rndTargetCreateDelay);
-                        }
-                    }
-                }
-                else
-                {
-                    yield return new WaitForSecondsRealtime(0.5f);
+                    AccessSpawn = false;
                 }
             }
         }
-        IEnumerator StartTimer()
-        {
-            while (spawnTimer > 0)
-            {
-                if (AccessSpawn)
-                {
-                    spawnTimer -= Time.deltaTime;
-                    yield return null;
-                }
-                else
-                {
-                    yield return null;
-                }
-            }
-        }
-
+         
     }
+
     public SliceTarget CreateTarget(TransformSpawn spawn)
     {
       
@@ -114,7 +79,7 @@ public class TargetSpawner : MonoBehaviour
             target.Mover.vector3 = dir;
          
                 target.Mover.speed = speed;
-            Destroy(target?.gameObject,5);
+            Destroy(target?.gameObject,3.5f);
         }
         return target;
     }

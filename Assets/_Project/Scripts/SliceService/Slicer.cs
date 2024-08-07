@@ -52,7 +52,7 @@ namespace Hanzzz.MeshSlicerFree
 
         private Plane slicePlane;
 
-        private GameObject originalGameObject;
+        private SliceTarget originalGameObject;
         private Matrix4x4 originalLocalToWorldMatrix;
         private Matrix4x4 originalWorldToLocalMatrix;
         private Mesh originalMesh;
@@ -88,11 +88,11 @@ namespace Hanzzz.MeshSlicerFree
 
         public class SliceReturnValue
         {
-            public GameObject topGameObject;
-            public GameObject bottomGameObject;
+            public SliceTarget topGameObject;
+            public SliceTarget bottomGameObject;
         }
 
-        public  SliceReturnValue  SliceAsync(GameObject originalGameObject, Plane slicePlane, Material intersectionMaterial)
+        public  SliceReturnValue  SliceAsync(SliceTarget originalGameObject, Plane slicePlane, Material intersectionMaterial)
         {
             CopyOriginalData(originalGameObject, slicePlane);
             
@@ -109,7 +109,7 @@ namespace Hanzzz.MeshSlicerFree
 
             return CreateNewGameObjects(intersectionMaterial);
         }
-        public SliceReturnValue Slice(GameObject originalGameObject, Plane slicePlane, Material intersectionMaterial)
+        public SliceReturnValue Slice(SliceTarget originalGameObject, Plane slicePlane, Material intersectionMaterial)
         {
             CopyOriginalData(originalGameObject, slicePlane);
             
@@ -125,7 +125,7 @@ namespace Hanzzz.MeshSlicerFree
             return CreateNewGameObjects(intersectionMaterial);
         }
 
-        private void CopyOriginalData(GameObject originalGameObject, Plane slicePlane)
+        private void CopyOriginalData(SliceTarget originalGameObject, Plane slicePlane)
         {
             this.originalGameObject = originalGameObject;
             this.slicePlane = slicePlane;
@@ -262,7 +262,7 @@ namespace Hanzzz.MeshSlicerFree
 
         private SliceReturnValue CreateNewGameObjects(Material intersectionMaterial)
         {
-            GameObject topGameObject = UnityEngine.Object.Instantiate(originalGameObject);
+            SliceTarget topGameObject = UnityEngine.Object.Instantiate(originalGameObject);
             Component[] components = topGameObject.GetComponents<Component>();
             foreach(Component component in components)
             {
@@ -272,7 +272,7 @@ namespace Hanzzz.MeshSlicerFree
                 }
                 UnityEngine.Object.DestroyImmediate(component);
             }
-            GameObject bottomGameObject = UnityEngine.Object.Instantiate(topGameObject);
+            SliceTarget bottomGameObject = UnityEngine.Object.Instantiate(topGameObject);
 
             topGameObject.GetComponent<MeshRenderer>().materials = topGameObject.GetComponent<MeshRenderer>().materials.Concat(new Material[]{intersectionMaterial}).ToArray();
             Mesh topMesh = new Mesh();
