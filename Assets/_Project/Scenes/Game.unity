@@ -949,7 +949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 344657620}
-  sensivity: 8.74
+  sensivity: 50
   mouseDelta: {x: 0, y: 0, z: 0}
 --- !u!224 &344657620
 RectTransform:
@@ -1828,7 +1828,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.41682827, g: 1, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2225,7 +2225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &1666131351
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2233,7 +2233,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666131350}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: b783086d372714d4ab257dcff14b382b, type: 3}
@@ -2329,7 +2329,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666131350}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ca7f6d89f46fc0468f18b16e5b1478d, type: 3}
   m_Name: 
@@ -3088,8 +3088,8 @@ MonoBehaviour:
   targetHandler: {fileID: 1460948069}
   maxSpeed: 24.6
   minSpeed: 16.7
-  spawnTimerMin: 0.68
-  spawnTimerMax: 1.13
+  spawnTimerMin: 0.07
+  spawnTimerMax: 0.11
   spawnDirection:
   - spawnTransform: {fileID: 593260247}
     isRandom: 1

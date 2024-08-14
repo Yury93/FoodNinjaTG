@@ -46,6 +46,10 @@ namespace Hanzzz.MeshSlicerFree
         {
             RotatePlane();
             MoveSlicer();
+        }
+        private void LateUpdate()
+        {
+          
             if (blockSlice > 0)
             {
                 blockSlice -= Time.deltaTime;
@@ -99,17 +103,17 @@ namespace Hanzzz.MeshSlicerFree
                 currentSliceName = target.SliceType;
                 blockSlice = Mathf.Clamp(blockSlice, 0, 2.5f);
                 Plane plane = new Plane(slicePlane.up, slicePlane.position);
-                Slicer.SliceReturnValue sliceReturnValue;
-                try
-                {
-                    int triangleCount = originalGameObject.meshFilter.sharedMesh.triangles.Length;
-                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                Slicer.SliceReturnValue sliceReturnValue = null;
+                //try
+                //{
+                   // int triangleCount = originalGameObject.meshFilter.sharedMesh.triangles.Length;
+                   // var watch = System.Diagnostics.Stopwatch.StartNew();
                     sliceReturnValue = slicer.Slice(originalGameObject.gameObject, plane, intersectionMaterial);
-                }
-                catch
-                {
-                    sliceReturnValue = null;
-                }
+                //}
+                //catch
+                //{
+                    //sliceReturnValue = null;
+                //}
 
                 if (null == sliceReturnValue)
                 {
@@ -122,10 +126,9 @@ namespace Hanzzz.MeshSlicerFree
                 sliceReturnValue.bottomGameObject.transform.position += -slicePlane.up.normalized * moveDistance;
 
 
-                sliceReturnValue.bottomGameObject.AddComponent<MeshCollider>().convex = true;
-                sliceReturnValue.topGameObject.AddComponent<MeshCollider>().convex = true;
-                sliceReturnValue.bottomGameObject.AddComponent<Rigidbody>();
-                sliceReturnValue.topGameObject.AddComponent<Rigidbody>();
+             
+                sliceReturnValue.bottomGameObject.gameObject.AddComponent<Rigidbody>();
+                sliceReturnValue.topGameObject.gameObject.AddComponent<Rigidbody>();
 
                 CreateSlashEffect();
 

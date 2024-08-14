@@ -57,6 +57,8 @@ namespace Hanzzz.MeshSlicerFree
             sliceReturnValue.topGameObject.transform.position += topMoveDistance;
             sliceReturnValue.bottomGameObject.transform.position += bottomMoveDistance;
 
+            Debug.LogError("async");
+
             Destroy(originalGameObject);
             originalGameObject = null;
         }

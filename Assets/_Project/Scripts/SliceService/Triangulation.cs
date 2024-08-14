@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+ 
 
 namespace Hanzzz.MeshSlicerFree
 {
@@ -422,7 +423,7 @@ public static class Triangulation
         }
 
         int tcurrent = tfirst;
-
+            int count = 0;
         while(tcurrent > 0 && trapezoids[tcurrent].lowPoint.GreaterThanEqualTo(trapezoids[tlast].lowPoint))
         {
             int tcurrenSave, tnSave;
@@ -438,7 +439,11 @@ public static class Triangulation
             nodes[tempIndex].segmentIndex = segmentIndex;
             nodes[tempIndex].leftNodeIndex = i1;
             nodes[tempIndex].rightNodeIndex = i2;
-
+                count++;
+                if (count > 20) break;
+                if (nodes.Length > i1)
+                { }
+                else continue;
             nodes[i1].nodeType = NodeType.TRAPEZOID;
             nodes[i1].trapezoidIndex = tcurrent;
             nodes[i1].parentNodeIndex = tempIndex;
@@ -447,9 +452,12 @@ public static class Triangulation
             nodes[i2].trapezoidIndex = tn = GetNewTrapezoidIndex();
             nodes[i2].parentNodeIndex = tempIndex;
 
-            trapezoids[tn] = trapezoids[tcurrent];
-            trapezoids[tcurrent].nodeIndex = i1;
-            trapezoids[tn].nodeIndex = i2;
+                if (trapezoids.Length > tn)
+                {
+                    trapezoids[tn] = trapezoids[tcurrent];
+                    trapezoids[tcurrent].nodeIndex = i1;
+                    trapezoids[tn].nodeIndex = i2;
+                }
             tcurrenSave = tcurrent;
             tnSave = tn;
 
@@ -531,13 +539,15 @@ public static class Triangulation
                     trapezoids[trapezoids[tcurrent].lowTrapezoid0Index].topTrapezoid1Index = -1;
                     trapezoids[trapezoids[tcurrent].lowTrapezoid1Index].topTrapezoid0Index = tcurrent;
                     trapezoids[trapezoids[tcurrent].lowTrapezoid1Index].topTrapezoid1Index = tn;
-
-                    trapezoids[tn].lowTrapezoid0Index = trapezoids[tcurrent].lowTrapezoid1Index;
-                    trapezoids[tn].lowTrapezoid1Index = -1;
-
+                        if (trapezoids.Length > tn)
+                        {
+                            trapezoids[tn].lowTrapezoid0Index = trapezoids[tcurrent].lowTrapezoid1Index;
+                            trapezoids[tn].lowTrapezoid1Index = -1;
+                        }
                     tcurrent = trapezoids[tcurrent].lowTrapezoid1Index;
                 }
             }
+            if(trapezoids.Length > tcurrenSave && trapezoids.Length > tnSave )
             trapezoids[tcurrenSave].rightSegmentIndex = trapezoids[tnSave].leftSegmentIndex = segmentIndex;
         }
 
@@ -632,6 +642,7 @@ public static class Triangulation
         nodes[i2].nodeType = NodeType.TRAPEZOID;
         nodes[i2].trapezoidIndex = tl;
         nodes[i2].parentNodeIndex = tempIndex;
+          if( trapezoids.Length > tl)
         trapezoids[tl].nodeIndex = i2;
 
         if(addPoint0)
@@ -742,67 +753,70 @@ public static class Triangulation
         }
     }
 
-    private static void AddSegmentHandleTopTrapezoid(int tcurrent, int tn, int segmentIndex)
-    {
-        if(trapezoids[tcurrent].topTrapezoid0Index > 0 && trapezoids[tcurrent].topTrapezoid1Index > 0)
+        private static void AddSegmentHandleTopTrapezoid(int tcurrent, int tn, int segmentIndex)
         {
-            if(trapezoids[tcurrent].topTrapezoid3Index > 0)
+            if (trapezoids[tcurrent].topTrapezoid0Index > 0 && trapezoids[tcurrent].topTrapezoid1Index > 0)
             {
-                if(Side.LEFT == trapezoids[tcurrent].topTrapezoid3Side)
+                if (trapezoids[tcurrent].topTrapezoid3Index > 0)
                 {
-                    trapezoids[tn].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index;
-                    trapezoids[tcurrent].topTrapezoid1Index = -1;
-                    trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid3Index;
+                    if (Side.LEFT == trapezoids[tcurrent].topTrapezoid3Side)
+                    {
+                        trapezoids[tn].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index;
+                        trapezoids[tcurrent].topTrapezoid1Index = -1;
+                        trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid3Index;
 
-                    trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
-                    trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid0Index = tn;
-                    trapezoids[trapezoids[tn].topTrapezoid1Index].lowTrapezoid0Index = tn;
+                        trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
+                        trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid0Index = tn;
+                        trapezoids[trapezoids[tn].topTrapezoid1Index].lowTrapezoid0Index = tn;
+                    }
+                    else
+                    {
+                        trapezoids[tn].topTrapezoid1Index = -1;
+                        trapezoids[tn].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index;
+                        trapezoids[tcurrent].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid0Index;
+                        trapezoids[tcurrent].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid3Index;
+
+                        trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
+                        trapezoids[trapezoids[tcurrent].topTrapezoid1Index].lowTrapezoid0Index = tcurrent;
+                        trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid0Index = tn;
+                    }
+                    trapezoids[tcurrent].topTrapezoid3Index = trapezoids[tn].topTrapezoid3Index = 0;
                 }
                 else
                 {
-                    trapezoids[tn].topTrapezoid1Index = -1;
                     trapezoids[tn].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index;
-                    trapezoids[tcurrent].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid0Index;
-                    trapezoids[tcurrent].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid3Index;
-
-                    trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
-                    trapezoids[trapezoids[tcurrent].topTrapezoid1Index].lowTrapezoid0Index = tcurrent;
+                    trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid1Index = -1;
                     trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid0Index = tn;
-                }
-                trapezoids[tcurrent].topTrapezoid3Index = trapezoids[tn].topTrapezoid3Index = 0;
-            }
-            else
-            {
-                trapezoids[tn].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index;
-                trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid1Index = -1;
-                trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid0Index = tn;
-            }
-        }
-        else
-        {
-            int tempU = trapezoids[tcurrent].topTrapezoid0Index;
-            int tempL0, tempL1;
-
-            if((tempL0 = trapezoids[tempU].lowTrapezoid0Index) > 0 && (tempL1 = trapezoids[tempU].lowTrapezoid1Index) > 0)
-            {
-                if(trapezoids[tempL0].rightSegmentIndex > 0 && !IsLeftOf(segments[segmentIndex].point1, trapezoids[tempL0].rightSegmentIndex))
-                {
-                    trapezoids[tcurrent].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index = trapezoids[tn].topTrapezoid1Index = -1;
-                    trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid1Index = tn;
-                }
-                else
-                {
-                    trapezoids[tn].topTrapezoid0Index = trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid1Index = -1;
-                    trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
                 }
             }
             else
             {
-                trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
-                trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid1Index = tn;
+                int tempU = trapezoids[tcurrent].topTrapezoid0Index;
+                int tempL0, tempL1;
+                if (trapezoids.Length > tempU)
+                {
+                    if ((tempL0 = trapezoids[tempU].lowTrapezoid0Index) > 0 && (tempL1 = trapezoids[tempU].lowTrapezoid1Index) > 0)
+                    {
+                        if (trapezoids[tempL0].rightSegmentIndex > 0 && !IsLeftOf(segments[segmentIndex].point1, trapezoids[tempL0].rightSegmentIndex))
+                        {
+                            trapezoids[tcurrent].topTrapezoid0Index = trapezoids[tcurrent].topTrapezoid1Index = trapezoids[tn].topTrapezoid1Index = -1;
+                            trapezoids[trapezoids[tn].topTrapezoid0Index].lowTrapezoid1Index = tn;
+                        }
+                        else
+                        {
+                            trapezoids[tn].topTrapezoid0Index = trapezoids[tn].topTrapezoid1Index = trapezoids[tcurrent].topTrapezoid1Index = -1;
+                            trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
+                        }
+                    }
+                    else
+                    {
+                        trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid0Index = tcurrent;
+                        trapezoids[trapezoids[tcurrent].topTrapezoid0Index].lowTrapezoid1Index = tn;
+                    }
+                }
+
             }
         }
-    }
 
     private static void AddSegmentMergeTrapezoids(int segmentIndex, int tfirst, int tlast, bool isLeftSide)
     {
@@ -983,9 +997,12 @@ public static class Triangulation
     }
     private static int GetNewTrapezoidIndex()
     {
-        trapezoids[trapezoidAddIndex].leftSegmentIndex = -1;
-        trapezoids[trapezoidAddIndex].rightSegmentIndex = -1;
-        trapezoids[trapezoidAddIndex].trapezoidState = State.VALID;
+            if (trapezoids.Length > 0 && trapezoids.Length > trapezoidAddIndex)
+            {
+                trapezoids[trapezoidAddIndex].leftSegmentIndex = -1;
+                trapezoids[trapezoidAddIndex].rightSegmentIndex = -1;
+                trapezoids[trapezoidAddIndex].trapezoidState = State.VALID;
+            }
         return trapezoidAddIndex++;
     }
 
@@ -1191,6 +1208,9 @@ public static class Triangulation
             }
             else
             {
+                    if (trapezoids.Length > 0 && trapezoids.Length > tcurrent && segments.Length > trapezoids[tcurrent].leftSegmentIndex)
+                    { }
+                    else return;
                 if(trapezoids[tcurrent].lowPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point1))
                 {
                     int v0 = trapezoids[trapezoids[tcurrent].topTrapezoid0Index].rightSegmentIndex;
@@ -1239,9 +1259,13 @@ public static class Triangulation
         }
         else if(trapezoids[tcurrent].topTrapezoid0Index > 0 || trapezoids[tcurrent].topTrapezoid1Index > 0)
         {
-            if(trapezoids[tcurrent].lowTrapezoid0Index > 0 && trapezoids[tcurrent].lowTrapezoid1Index > 0)
+            if(trapezoids[tcurrent].lowTrapezoid0Index > 0 && trapezoids[tcurrent].lowTrapezoid1Index > 0 && segments.Length > trapezoids[tcurrent].leftSegmentIndex)
             {
-                if(trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point0))
+                    if (trapezoids.Length > 0 && trapezoids.Length > tcurrent && segments.Length > trapezoids[tcurrent].leftSegmentIndex)
+                    { }
+                    else return;
+
+                    if (trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point0))
                 {
                     int v0 = trapezoids[trapezoids[tcurrent].lowTrapezoid1Index].leftSegmentIndex;
                     int v1 = trapezoids[tcurrent].leftSegmentIndex;
@@ -1265,7 +1289,10 @@ public static class Triangulation
                 }
                 else
                 {
-                    int v0 = trapezoids[trapezoids[tcurrent].lowTrapezoid1Index].leftSegmentIndex;
+                        if (trapezoids.Length > tcurrent) { } else return;
+                        if (trapezoids.Length > trapezoids[tcurrent].lowTrapezoid1Index) { } else { return; }
+                        if (segments.Length > trapezoids[tcurrent].rightSegmentIndex) { } else { return; }
+                        int v0 = trapezoids[trapezoids[tcurrent].lowTrapezoid1Index].leftSegmentIndex;
                     int v1 = segments[trapezoids[tcurrent].rightSegmentIndex].nextSegmentIndex;
 
                     if(!isUp && from == trapezoids[tcurrent].lowTrapezoid1Index)
@@ -1289,52 +1316,58 @@ public static class Triangulation
             }
             else
             {
-                if(trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point0) && trapezoids[tcurrent].lowPoint.EqualTo(segments[trapezoids[tcurrent].rightSegmentIndex].point0))
-                {
-                    int v0 = trapezoids[tcurrent].rightSegmentIndex;
-                    int v1 = trapezoids[tcurrent].leftSegmentIndex;
+                    if (trapezoids.Length > 0 && trapezoids.Length > tcurrent && segments.Length > trapezoids[tcurrent].leftSegmentIndex)
+                    { }
+                    else return;
+                    if (trapezoids.Length > tcurrent && segments.Length > trapezoids[tcurrent].leftSegmentIndex && segments.Length > trapezoids[tcurrent].rightSegmentIndex)
+                    {
+                        if (trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point0) && trapezoids[tcurrent].lowPoint.EqualTo(segments[trapezoids[tcurrent].rightSegmentIndex].point0))
+                        {
+                            int v0 = trapezoids[tcurrent].rightSegmentIndex;
+                            int v1 = trapezoids[tcurrent].leftSegmentIndex;
 
-                    if(isUp)
-                    {
-                        int mnew = MakeNewMonotonePolygon(mcurrent, v1, v0);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
-                        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
-                        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
-                        
-                    }
-                    else
-                    {
-                        int mnew = MakeNewMonotonePolygon(mcurrent, v0, v1);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
-                        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
-                        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
-                    }
-                }
-                else if(trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].rightSegmentIndex].point1) && trapezoids[tcurrent].lowPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point1))
-                {
-                    int v0 = segments[trapezoids[tcurrent].rightSegmentIndex].nextSegmentIndex;
-                    int v1 = segments[trapezoids[tcurrent].leftSegmentIndex].nextSegmentIndex;
+                            if (isUp)
+                            {
+                                int mnew = MakeNewMonotonePolygon(mcurrent, v1, v0);
+                                TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
+                                TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
+                                TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
+                                TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
 
-                    if(isUp)
-                    {
-                        int mnew = MakeNewMonotonePolygon(mcurrent, v1, v0);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
-                        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
-                        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
-                        
-                    }
-                    else
-                    {
-                        int mnew = MakeNewMonotonePolygon(mcurrent, v0, v1);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
-                        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
-                        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
-                        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
-                    }
+                            }
+                            else
+                            {
+                                int mnew = MakeNewMonotonePolygon(mcurrent, v0, v1);
+                                TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
+                                TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
+                                TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
+                                TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
+                            }
+                        }
                 }
+                //else if(trapezoids[tcurrent].topPoint.EqualTo(segments[trapezoids[tcurrent].rightSegmentIndex].point1) && trapezoids[tcurrent].lowPoint.EqualTo(segments[trapezoids[tcurrent].leftSegmentIndex].point1))
+                //{
+                //    int v0 = segments[trapezoids[tcurrent].rightSegmentIndex].nextSegmentIndex;
+                //    int v1 = segments[trapezoids[tcurrent].leftSegmentIndex].nextSegmentIndex;
+
+                //    if(isUp)
+                //    {
+                //        int mnew = MakeNewMonotonePolygon(mcurrent, v1, v0);
+                //        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
+                //        TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
+                //        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
+                //        TraversePolygon(mnew, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
+                        
+                //    }
+                //    else
+                //    {
+                //        int mnew = MakeNewMonotonePolygon(mcurrent, v0, v1);
+                //        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid1Index, tcurrent, true);
+                //        TraversePolygon(mcurrent, trapezoids[tcurrent].lowTrapezoid0Index, tcurrent, true);
+                //        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
+                //        TraversePolygon(mnew, trapezoids[tcurrent].topTrapezoid1Index, tcurrent, false);
+                //    }
+                //}
                 else
                 {
                     TraversePolygon(mcurrent, trapezoids[tcurrent].topTrapezoid0Index, tcurrent, false);
@@ -1371,14 +1404,19 @@ public static class Triangulation
         int f0 = vertexChain[v0].nextfree;
         int f1 = vertexChain[v1].nextfree;
 
-        vertexChain[v0].vertexNext[nextVertexPosition.Item1] = v1;
-        vertexChain[v0].vertexPosition[f0] = i;
-        vertexChain[v0].vertexNext[f0] = monotoneChain[monotoneChain[i].next].vertexNumber;
-        vertexChain[v1].vertexPosition[f1] = j;
-        vertexChain[v1].vertexNext[f1] = v0;
+            //if (vertexChain.Length > v0 && vertexChain[v0].vertexNext.Length > nextVertexPosition.Item1)
+            //{
+            //    vertexChain[v0].vertexNext[nextVertexPosition.Item1] = v1;
+            //    vertexChain[v0].vertexPosition[f0] = i;
+            //    vertexChain[v0].vertexNext[f0] = monotoneChain[monotoneChain[i].next].vertexNumber;
 
-        vertexChain[v0].nextfree++;
-        vertexChain[v1].nextfree++;
+
+            //    vertexChain[v1].vertexPosition[f1] = j;
+            //    vertexChain[v1].vertexNext[f1] = v0;
+
+            //    vertexChain[v0].nextfree++;
+            //    vertexChain[v1].nextfree++;
+            //}
 
         int mnew = GetNewMonotoneIndex();
         monotoneIndex[mcurrent] = p;
@@ -1392,33 +1430,39 @@ public static class Triangulation
         int res1 = 0;
 
         double angle = -4.0;
-        for(int i=0; i<4; i++)
-        {
-            if(vertexChain[v0].vertexNext[i] <= 0)
+            for (int i = 0; i < 4; i++)
             {
-                continue;
+                if (vertexChain.Length > v0 && vertexChain.Length > v1 && vertexChain[v0].vertexNext.Length > i)
+                {
+                    if (vertexChain[v0].vertexNext[i] <= 0)
+                    {
+                        continue;
+                    }
+                    double temp;
+                    if ((temp = GetAngle(vertexChain[v0].point, vertexChain[vertexChain[v0].vertexNext[i]].point, vertexChain[v1].point)) > angle)
+                    {
+                        angle = temp;
+                        res0 = i;
+                    }
+                }
             }
-            double temp;
-            if((temp = GetAngle(vertexChain[v0].point, vertexChain[vertexChain[v0].vertexNext[i]].point, vertexChain[v1].point)) > angle)
-            {
-                angle = temp;
-                res0 = i;
-            }
-        }
 
         angle = -4.0;
         for(int i=0; i<4; i++)
         {
-            if(vertexChain[v1].vertexNext[i] <= 0)
-            {
-                continue;
-            }
-            double temp;
-            if((temp = GetAngle(vertexChain[v1].point, vertexChain[vertexChain[v1].vertexNext[i]].point, vertexChain[v0].point)) > angle)
-            {
-                angle = temp;
-                res1 = i;
-            }
+                if (vertexChain.Length > v0 && vertexChain.Length > v1 && vertexChain[v0].vertexNext.Length > i)
+                {
+                    if (vertexChain[v1].vertexNext[i] <= 0)
+                    {
+                        continue;
+                    }
+                    double temp;
+                    if ((temp = GetAngle(vertexChain[v1].point, vertexChain[vertexChain[v1].vertexNext[i]].point, vertexChain[v0].point)) > angle)
+                    {
+                        angle = temp;
+                        res1 = i;
+                    }
+                }
         }
 
         return (res0, res1);
@@ -1572,18 +1616,22 @@ public static class Triangulation
 
             endv = monotoneChain[positionMax].vertexNumber;
         }
-
+        int i = 0;
         while((v != endv) || (reflexChainIndex>1))
         {
             if(reflexChainIndex>0)
             {
+                    if (reflexChain.Length > reflexChainIndex - 1) break;
                 if(Cross(vertexChain[v].point, vertexChain[reflexChain[reflexChainIndex-1]].point, vertexChain[reflexChain[reflexChainIndex]].point) > 0.0)
                 {
-                    res[resCount, 0] = reflexChain[reflexChainIndex-1];
-                    res[resCount, 1] = reflexChain[reflexChainIndex];
-                    res[resCount, 2] = v;
-                    resCount++;
-                    reflexChainIndex--;
+                        if (res.Length > resCount && reflexChainIndex < reflexChain.Length && reflexChain.Length > 0)
+                        {
+                            res[resCount, 0] = reflexChain[reflexChainIndex - 1];
+                            res[resCount, 1] = reflexChain[reflexChainIndex];
+                            res[resCount, 2] = v;
+                            resCount++;
+                            reflexChainIndex--;
+                        }
                 }
                 else
                 {
@@ -1600,9 +1648,11 @@ public static class Triangulation
                 vpos = monotoneChain[vpos].next;
                 v = monotoneChain[vpos].vertexNumber;
             }
+                i++;
+                if (i > 20) break;
         }
-
-        res[resCount, 0] = reflexChain[reflexChainIndex-1];
+            if (reflexChainIndex > 0)
+                res[resCount, 0] = reflexChain[reflexChainIndex-1];
         res[resCount, 1] = reflexChain[reflexChainIndex];
         res[resCount, 2] = v;
         resCount++;

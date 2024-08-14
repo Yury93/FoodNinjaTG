@@ -28,61 +28,61 @@ public class AudioService : MonoBehaviour
     } 
     private void OnSlashPremiumTarget()
     {
-        var sound = Instantiate(soundPrefab, this.transform);
-        sound.PlayClip(slashPremium);
+        //var sound = Instantiate(soundPrefab, this.transform);
+        //sound.PlayClip(slashPremium);
     }
 
     public void CreateFoodsVFX(SliceTarget sliceTarget)
     {
-        if(sliceTarget.SliceType == SliceTarget.SliceName.premium) { return; }
-        var sound = Instantiate(soundPrefab, this.transform);
-        var rnd = UnityEngine. Random.Range(0, foodSlashes.Count);
-        sound.PlayClip(foodSlashes[rnd]);
+        //if(sliceTarget.SliceType == SliceTarget.SliceName.premium) { return; }
+        //var sound = Instantiate(soundPrefab, this.transform);
+        //var rnd = UnityEngine. Random.Range(0, foodSlashes.Count);
+        //sound.PlayClip(foodSlashes[rnd]);
 
     }
     public void CreatePremiumVFX(SliceTarget sliceTarget)
     {
-        if (sliceTarget.SliceType != SliceTarget.SliceName.premium) { return; }
-        var sound = Instantiate(soundPrefab, this.transform);
-        sound.PlayClip(slicePremium);
+        //if (sliceTarget.SliceType != SliceTarget.SliceName.premium) { return; }
+        //var sound = Instantiate(soundPrefab, this.transform);
+        //sound.PlayClip(slicePremium);
 
     }
     public void CreateBombVFX(SliceTarget sliceTarget)
     {
-        var sound = Instantiate(soundPrefab, this.transform);
-        sound.PlayClip(slashBomb);
+        //var sound = Instantiate(soundPrefab, this.transform);
+        //sound.PlayClip(slashBomb);
     }
 
 
 
-    private void Update()
-    {
-        if (touchpad.Horizontal != 0f || touchpad.Vertical != 0f)
-            PlaySlash();
-        else if(corSlashes != null)
-            StopCoroutine(corSlashes);
-    }
+    //private void Update()
+    //{
+    //    if (touchpad.Horizontal != 0f || touchpad.Vertical != 0f)
+    //        PlaySlash();
+    //    else if(corSlashes != null)
+    //        StopCoroutine(corSlashes);
+    //}
     public void PlaySlash()
     {
-        if(isPlaySlash == false && audioSource.isPlaying == false)
-            corSlashes = StartCoroutine(CorPlaySlashes());   
+        //if(isPlaySlash == false && audioSource.isPlaying == false)
+        //    corSlashes = StartCoroutine(CorPlaySlashes());   
     }
-    private IEnumerator CorPlaySlashes()
-    {
-        yield return new WaitUntil(() => isPlaySlash == false && audioSource.isPlaying == false);
-        if ((touchpad.Horizontal != 0f || touchpad.Vertical != 0f )&& isPlaySlash == false && Input.GetMouseButton(0))
-        {
-            isPlaySlash = true;
-            if(slashQueu == 0) {  slashQueu = 1; }
-            else slashQueu = 0;
-            audioSource.clip = slashes[slashQueu];
-            audioSource.timeSamples = (int)(audioSource.clip.length * slashScheduled * audioSource.clip.frequency);
-            audioSource.Play();
-        }
-        if(audioSource.clip != null)
-        {
-            yield return new WaitForSeconds(audioSource.clip.length);
-            isPlaySlash = false;
-        }
-    }
+    //private IEnumerator CorPlaySlashes()
+    //{
+    //    yield return new WaitUntil(() => isPlaySlash == false && audioSource.isPlaying == false);
+    //    if ((touchpad.Horizontal != 0f || touchpad.Vertical != 0f )&& isPlaySlash == false && Input.GetMouseButton(0))
+    //    {
+    //        isPlaySlash = true;
+    //        if(slashQueu == 0) {  slashQueu = 1; }
+    //        else slashQueu = 0;
+    //        audioSource.clip = slashes[slashQueu];
+    //        audioSource.timeSamples = (int)(audioSource.clip.length * slashScheduled * audioSource.clip.frequency);
+    //        audioSource.Play();
+    //    }
+    //    if(audioSource.clip != null)
+    //    {
+    //        yield return new WaitForSeconds(audioSource.clip.length);
+    //        isPlaySlash = false;
+    //    }
+    //}
 }

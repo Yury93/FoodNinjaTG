@@ -2,7 +2,7 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
+ 
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -52,7 +52,7 @@ namespace Hanzzz.MeshSlicerFree
 
         private Plane slicePlane;
 
-        private SliceTarget originalGameObject;
+        private GameObject originalGameObject;
         private Matrix4x4 originalLocalToWorldMatrix;
         private Matrix4x4 originalWorldToLocalMatrix;
         private Mesh originalMesh;
@@ -88,11 +88,11 @@ namespace Hanzzz.MeshSlicerFree
 
         public class SliceReturnValue
         {
-            public SliceTarget topGameObject;
-            public SliceTarget bottomGameObject;
+            public GameObject topGameObject;
+            public GameObject bottomGameObject;
         }
 
-        public  SliceReturnValue  SliceAsync(SliceTarget originalGameObject, Plane slicePlane, Material intersectionMaterial)
+        public  SliceReturnValue  SliceAsync(GameObject originalGameObject, Plane slicePlane, Material intersectionMaterial)
         {
             CopyOriginalData(originalGameObject, slicePlane);
             
@@ -109,7 +109,7 @@ namespace Hanzzz.MeshSlicerFree
 
             return CreateNewGameObjects(intersectionMaterial);
         }
-        public SliceReturnValue Slice(SliceTarget originalGameObject, Plane slicePlane, Material intersectionMaterial)
+        public SliceReturnValue Slice(GameObject originalGameObject, Plane slicePlane, Material intersectionMaterial)
         {
             CopyOriginalData(originalGameObject, slicePlane);
             
@@ -117,6 +117,7 @@ namespace Hanzzz.MeshSlicerFree
             {
                 originalMesh.GetTriangles(originalTriangles, currentSubMeshIndex);
                 LoopThroughTriangles();
+                break;
             }
         
             FillIntersection(topIntersectionConnection, true);
@@ -125,7 +126,7 @@ namespace Hanzzz.MeshSlicerFree
             return CreateNewGameObjects(intersectionMaterial);
         }
 
-        private void CopyOriginalData(SliceTarget originalGameObject, Plane slicePlane)
+        private void CopyOriginalData(GameObject originalGameObject, Plane slicePlane)
         {
             this.originalGameObject = originalGameObject;
             this.slicePlane = slicePlane;
@@ -215,22 +216,46 @@ namespace Hanzzz.MeshSlicerFree
 
         private void FillIntersection(List<List<Vector3>> intersection, bool isTop)
         {
-            List<List<Vector3>> intersectionWorld = intersection.Select(x=>x.Select(y=> originalLocalToWorldMatrix.MultiplyPoint3x4(y)).ToList()).ToList();
+            List<List<Vector3>> intersectionWorld = intersection.Select(x=>x.Select(y=> originalLocalToWorldMatrix
+            .MultiplyPoint3x4(y)).ToList()).ToList();
+            if (intersectionWorld.Count == 0) return;
             (Vector3, Vector3, Vector3) plane = PlaneProjection.GetPlane(intersectionWorld[0],slicePlane.normal);
             ContourTree contourTree = new ContourTree();
             for(int i = 0; i<intersection.Count; i++)
             {
                 List<Vector2> contourIntersection = PlaneProjection.Get2DProjection(intersectionWorld[i],slicePlane.normal,plane.Item1,plane.Item2,plane.Item3).ToList();
-                List<int> mapping;
-                if(isTop)
+                List<int> mapping = new List<int>();
+                if (intersection.Count > i)
                 {
-                    mapping = intersection[i].Select(x=>topIntersectionIndexMapping[x]).ToList();
-                }
-                else
-                {
-                    mapping = intersection[i].Select(x=>bottomIntersectionIndexMapping[x]).ToList();
-                }
+                    if (isTop)
+                    {
 
+                        mapping = intersection[i].Select(x => {
+                            if (topIntersectionIndexMapping.ContainsKey(x))
+                            {
+                                return topIntersectionIndexMapping[x];
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }).ToList();
+                    }
+                    else
+                    {
+                        mapping = intersection[i].Select(x => {
+                            if (bottomIntersectionIndexMapping.ContainsKey(x))
+                            {
+                                return bottomIntersectionIndexMapping[x];
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }).ToList();
+                    }
+                }
+              
                 float area = 0f;
                 int last = contourIntersection.Count-1;
                 for(int current=0; current<contourIntersection.Count; current++)
@@ -262,7 +287,7 @@ namespace Hanzzz.MeshSlicerFree
 
         private SliceReturnValue CreateNewGameObjects(Material intersectionMaterial)
         {
-            SliceTarget topGameObject = UnityEngine.Object.Instantiate(originalGameObject);
+            GameObject topGameObject = UnityEngine.Object.Instantiate(originalGameObject);
             Component[] components = topGameObject.GetComponents<Component>();
             foreach(Component component in components)
             {
@@ -272,7 +297,7 @@ namespace Hanzzz.MeshSlicerFree
                 }
                 UnityEngine.Object.DestroyImmediate(component);
             }
-            SliceTarget bottomGameObject = UnityEngine.Object.Instantiate(topGameObject);
+            GameObject bottomGameObject = UnityEngine.Object.Instantiate(topGameObject);
 
             topGameObject.GetComponent<MeshRenderer>().materials = topGameObject.GetComponent<MeshRenderer>().materials.Concat(new Material[]{intersectionMaterial}).ToArray();
             Mesh topMesh = new Mesh();
